@@ -1,23 +1,5 @@
 const database = require("../../database");
 
-const users = [
-  {
-    id: 1,
-    firstname: "Jerome",
-    name: "Ryan",
-  },
-  {
-    id: 2,
-    firstname: "Kristin",
-    name: "Boyd",
-  },
-  {
-    id: 3,
-    firstname: "Joe",
-    name: "Ramirez",
-  },
-];
-
 const getUsers = (req, res) => {
   database
     .query("SELECT * FROM users")
@@ -30,7 +12,7 @@ const getUsers = (req, res) => {
     });
 };
 
-const getUsersById = (req, res) => {
+const getUserById = (req, res) => {
   const id = parseInt(req.params.id);
 
   database.query("SELECT * FROM users WHERE id = ?", [id]).then(([users]) => {
@@ -44,5 +26,5 @@ const getUsersById = (req, res) => {
 
 module.exports = {
   getUsers,
-  getUsersById,
+  getUserById,
 };
