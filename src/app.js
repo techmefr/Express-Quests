@@ -13,5 +13,6 @@ const usersControllers = require("./controllers/usersControllers");
 
 app.get("/api/users", usersControllers.getUsers);
 app.get("/api/users/:id", usersControllers.getUserById);
+app.post("/api/users", usersControllers.postUser);
 
 module.exports = app;
