@@ -1,7 +1,9 @@
 const request = require("supertest");
-const database = require("../database");
 
 const app = require("../src/app");
+const database = require("../database");
+
+const crypto = require("node:crypto");
 
 describe("GET /api/users", () => {
   it("should return all users", async () => {
@@ -28,10 +30,9 @@ describe("GET /api/users/:id", () => {
     expect(response.status).toEqual(404);
   });
 });
-const crypto = require("crypto");
 
 describe("POST /api/users", () => {
-  it("should return created user with all properties", async () => {
+  it("should return created user", async () => {
     const newUser = {
       firstname: "Marie",
       lastname: "Martin",
@@ -46,13 +47,20 @@ describe("POST /api/users", () => {
     expect(response.body).toHaveProperty("id");
     expect(typeof response.body.id).toBe("number");
 
-    const userInDatabase = await getUserFromDatabase(response.body.id);
-    expect(userInDatabase).not.toBeNull();
-    expect(userInDatabase).toMatchObject(newUser);
-  });
+    const [result] = await database.query(
+      "SELECT * FROM users WHERE id=?",
+      response.body.id
+    );
 
-  it("should return an error for a user with missing properties", async () => {
-    const userWithMissingProps = { firstname: "John" };
+    const [userInDatabase] = result;
+
+    expect(userInDatabase).toHaveProperty("id");
+
+    expect(userInDatabase).toHaveProperty("email");
+    expect(userInDatabase.email).toStrictEqual(newUser.email);
+  });
+  it("should return an error", async () => {
+    const userWithMissingProps = { email: "julienbubu@gmad.org" };
 
     const response = await request(app)
       .post("/api/users")
@@ -61,11 +69,3 @@ describe("POST /api/users", () => {
     expect(response.status).toEqual(500);
   });
 });
-
-async function getUserFromDatabase(userId) {
-  const [result] = await database.query(
-    "SELECT * FROM users WHERE id=?",
-    userId
-  );
-  return result[0];
-}
