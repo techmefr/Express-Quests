@@ -1,7 +1,5 @@
 require("dotenv").config();
-
 const mysql = require("mysql2/promise");
-console.log(process.env);
 
 const database = mysql.createPool({
   host: process.env.DB_HOST,
@@ -10,7 +8,5 @@ const database = mysql.createPool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
 });
-
-// Utilisez moviesDatabase et usersDatabase au lieu de database
 
 module.exports = database;
